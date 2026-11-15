@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Serial Monitor</title>
+  <script src="/preload.js"></script>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <div class="app">
+    <!-- Top Header & Target Selector -->
+    <header class="header">
+      <div class="title-row">
+        <div class="title-group">
+          <h1 class="title">Serial Monitor</h1>
+          <span id="header-badge" class="summary-badge">Idle</span>
+        </div>
+        <div class="header-actions">
+          <button id="refresh-btn" type="button" class="icon-btn" title="Refresh active brokers">
+            <svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+              <path d="M13.5 8A5.5 5.5 0 1 1 11.9 4.1M13.5 2.5v3h-3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+          <button id="toggle-drawer-btn" type="button" class="ghost-btn" title="Add or configure a serial target">
+            + Target
+          </button>
+        </div>
+      </div>
+
+      <!-- Target Chips Strip (Active Brokers + Saved Targets) -->
+      <div id="target-strip" class="target-strip hidden" role="tablist" aria-label="Serial targets"></div>
+
+      <!-- Collapsible New / Edit Target Form -->
+      <form id="target-drawer" class="target-drawer hidden" autocomplete="off">
+        <input id="edit-prev-key" type="hidden" value="">
+        <div class="drawer-row">
+          <div class="endpoint-group">
+            <input
+              id="cfg-host"
+              class="field host-input"
+              type="text"
+              placeholder="192.168.1.50 or COM4"
+              aria-label="Remote host/IP or local COM port"
+              spellcheck="false"
+            >
+            <span id="cfg-port-sep" class="port-sep">:</span>
+            <input
+              id="cfg-port"
+              class="field port-input"
+              type="number"
+              min="1"
+              max="65535"
+              value="3030"
+              aria-label="RFC2217 TCP port"
+              title="RFC2217 TCP port (mouse wheel to adjust)"
+            >
+          </div>
+
+          <select id="cfg-baud-select" class="field baud-select" aria-label="Baud rate">
+            <option value="74880" selected>74880 bd</option>
+            <option value="115200">115200 bd</option>
+            <option value="230400">230400 bd</option>
+            <option value="460800">460800 bd</option>
+            <option value="921600">921600 bd</option>
+            <option value="2000000">2000000 bd</option>
+            <option value="57600">57600 bd</option>
+            <option value="9600">9600 bd</option>
+            <option value="custom">Custom…</option>
+          </select>
+          <input
+            id="cfg-baud-custom"
+            class="field baud-custom hidden"
+            type="number"
+            min="300"
+            max="12000000"
+            placeholder="Baud"
+            aria-label="Custom baud rate"
+          >
+        </div>
+
+        <div class="drawer-row drawer-row-bottom">
+          <input
+            id="cfg-nickname"
+            class="field nick-input"
+            type="text"
+            maxlength="64"
+            placeholder="Nickname (optional, e.g. Bench ESP01)"
+            aria-label="Target nickname"
+          >
+          <div class="drawer-btns">
+            <button id="cfg-delete-btn" type="button" class="btn btn-danger-ghost hidden" title="Delete saved bookmark">Delete</button>
+            <button id="cfg-cancel-btn" type="button" class="btn btn-ghost">Cancel</button>
+            <button id="cfg-save-btn" type="button" class="btn btn-secondary" title="Save target bookmark without starting">Save</button>
+            <button id="cfg-connect-btn" type="submit" class="btn btn-primary">Connect</button>
+          </div>
+        </div>
+      </form>
+    </header>
+
+    <div id="toast" class="toast hidden" role="alert"></div>
+
+    <!-- Active Monitor Toolbar & Viewport -->
+    <section id="monitor-section" class="monitor-section hidden">
+      <div class="status-strip">
+        <div class="status-left">
+          <span id="status-pill" class="status-pill state-idle">
+            <span class="status-dot"></span>
+            <span id="status-text">Idle</span>
+          </span>
+          <span id="endpoint-summary" class="endpoint-summary"></span>
+        </div>
+        <div class="status-right">
+          <span id="telemetry-label" class="telemetry-label" title=""></span>
+          <button id="edit-target-btn" type="button" class="icon-btn" title="Edit or bookmark this target">
+            <svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+              <path d="M11.5 2.5a1.414 1.414 0 0 1 2 2L5.5 12.5l-3 .75.75-3 8.25-7.75Z" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <div class="action-bar">
+        <div class="action-group">
+          <button id="btn-attach" type="button" class="ctrl-btn ctrl-primary" title="Start or attach to serial stream">
+            Attach
+          </button>
+          <button id="btn-reboot" type="button" class="ctrl-btn" title="Pulse serial RTS (DTR=0) to reboot board into normal mode">
+            Reboot
+          </button>
+          <button id="btn-pause" type="button" class="ctrl-btn" title="Temporarily release serial port">
+            Pause
+          </button>
+          <button id="btn-mark" type="button" class="ctrl-btn" title="Insert timestamped mark into shared log (Shift+Click for custom label)">
+            Mark
+          </button>
+        </div>
+        <button id="btn-stop" type="button" class="ctrl-btn ctrl-stop" title="Stop background broker daemon and release remote port">
+          Stop
+        </button>
+      </div>
+
+      <!-- Inline Custom Mark Bar (opened on Shift+Click Mark) -->
+      <form id="mark-form" class="mark-bar hidden" autocomplete="off">
+        <input id="mark-input" class="field mark-input" type="text" maxlength="80" placeholder="Mark label (e.g. before-ota)">
+        <button type="submit" class="btn btn-primary btn-xs">Insert</button>
+        <button id="mark-cancel" type="button" class="btn btn-ghost btn-xs">Cancel</button>
+      </form>
+
+      <!-- Search / Highlight / Filter & Viewport Options Bar -->
+      <div class="filter-bar">
+        <div class="filter-input-wrap">
+          <input
+            id="filter-input"
+            class="filter-input"
+            type="text"
+            placeholder="Highlight / filter (text or /regex/i)…"
+            aria-label="Highlight or filter serial output"
+            spellcheck="false"
+          >
+          <span id="filter-count" class="filter-count hidden"></span>
+          <button id="filter-clear" type="button" class="filter-clear hidden" title="Clear search">×</button>
+        </div>
+        <div class="view-toggles">
+          <button id="toggle-filter" type="button" class="toggle-chip" title="Filter out unmatched lines (off = highlight matched lines in context)">Filter</button>
+          <button id="toggle-ts" type="button" class="toggle-chip active" title="Show/hide line timestamps">TS</button>
+          <button id="toggle-wrap" type="button" class="toggle-chip active" title="Toggle line wrapping">Wrap</button>
+          <button id="btn-clear" type="button" class="toggle-chip" title="Clear local viewport (does not erase shared log file)">Clear</button>
+        </div>
+      </div>
+
+      <!-- Terminal Log Viewport -->
+      <div class="viewport-wrap">
+        <div id="log-viewport" class="log-viewport wrap-lines" tabindex="0" role="log" aria-live="off"></div>
+        <button id="follow-pill" type="button" class="follow-pill hidden">↓ Follow</button>
+      </div>
+    </section>
+
+    <!-- Empty State (no targets configured and no active brokers) -->
+    <main id="empty-state" class="empty-state hidden">
+      <div class="empty-title">No serial targets active</div>
+      <p class="empty-desc">
+        Enter a remote <code>hub4com</code> host/IP &amp; port above (for example <code>192.168.1.50</code> : <code>3030</code> at <code>74880</code> baud) to start a broker, or launch a monitor from any conversation to attach automatically.
+      </p>
+    </main>
+  </div>
+
+  <script src="/app.js"></script>
+</body>
+</html>

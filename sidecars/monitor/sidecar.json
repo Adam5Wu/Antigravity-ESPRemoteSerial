@@ -1,0 +1,18 @@
+{
+  "command": "node",
+  "args": ["main.mjs"],
+  "restart_policy": "always",
+  "display_name": "Serial Monitor",
+  "description": "Live multi-target client for shared RFC2217 and COM serial monitor brokers.",
+  "has_web_ui": true,
+  "ui_config": {
+    "display_name": "Serial Monitor",
+    "views": [
+      {
+        "path": "/",
+        "entrypoint": "SIDECAR_UI_ENTRYPOINT_AUX_PANE",
+        "title": "Serial Monitor"
+      }
+    ]
+  }
+}

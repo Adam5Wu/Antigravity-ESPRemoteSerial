@@ -1,0 +1,17 @@
+{
+  "name": "serial-monitor",
+  "displayName": "Serial Monitor",
+  "version": "1.0.0",
+  "description": "Antigravity side panel, cooperative serial broker, and hub4com RFC2217 flasher for agentic ESP8266 PlatformIO development on Windows.",
+  "author": {
+    "name": "Zhenyu Wu",
+    "url": "https://github.com/Adam5Wu"
+  },
+  "repository": "https://github.com/Adam5Wu/Antigravity-ESPRemoteSerial",
+  "logo": "assets/logo.svg",
+  "suggestedPrompts": [
+    "Open the Serial Monitor side panel",
+    "Start watching ESP8266 serial logs on rfc2217://192.168.1.50:3030?ign_set_control",
+    "Flash the ESP8266 firmware over RFC2217 and check the 74880-baud boot log"
+  ]
+}

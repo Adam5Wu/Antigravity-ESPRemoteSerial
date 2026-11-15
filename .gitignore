@@ -1,0 +1,22 @@
+# Python bytecode & virtual environments
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+*.egg-info/
+
+# Node.js dependencies (if installed locally)
+node_modules/
+
+# Logs & temporary state
+*.log
+*.log.*
+*.lock
+
+# OS & editor metadata
+.DS_Store
+Thumbs.db
+Desktop.ini
+.vscode/
+.idea/
