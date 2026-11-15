@@ -40,7 +40,7 @@ New-Item -ItemType Directory -Path `
     "$regDir\sidecars\monitor" -Force | Out-Null
 
 Copy-Item "$srcRoot\plugin.json" "$regDir\plugin.json" -Force
-Copy-Item "$srcRoot\assets\logo.svg" "$regDir\assets\logo.svg" -Force
+Copy-Item "$srcRoot\assets\*" "$regDir\assets\" -Force
 Copy-Item "$srcRoot\tools\pio_hub4com_rfc2217.py" "$regDir\tools\pio_hub4com_rfc2217.py" -Force
 Copy-Item "$srcRoot\tools\serial_monitor.py" "$regDir\tools\serial_monitor.py" -Force
 Copy-Item "$srcRoot\skills\esp-remote-serial\SKILL.md" "$regDir\skills\esp-remote-serial\SKILL.md" -Force
