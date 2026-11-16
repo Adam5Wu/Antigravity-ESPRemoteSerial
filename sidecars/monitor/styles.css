@@ -44,6 +44,7 @@
 :root[data-theme="dark"] {
   color-scheme: dark;
   --sm-term-bg: color-mix(in srgb, var(--sm-bg) 82%, #000000 18%);
+  --sm-error: var(--error, #f87171);
   --sm-success: #4ade80;
   --sm-warning: #f59e0b;
   --sm-info: #38bdf8;
@@ -102,6 +103,7 @@ button:disabled {
 }
 
 .app {
+  position: relative;
   display: flex;
   flex-direction: column;
   height: 100vh;
@@ -438,21 +440,54 @@ button:disabled {
   background: color-mix(in srgb, var(--sm-error) 12%, transparent);
 }
 
-/* ---------- Toast ---------- */
+/* ---------- Floating Bottom Toast Banner ---------- */
 .toast {
-  margin: 6px 11px 0;
-  padding: 6px 10px;
-  border-radius: var(--r-md);
-  font-size: 11.5px;
+  position: absolute;
+  left: 12px;
+  right: 12px;
+  bottom: 12px;
+  z-index: 30;
+  padding: 11px 15px;
+  border-radius: var(--r-lg);
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.45;
+  overflow-wrap: anywhere;
   border: 1px solid var(--sm-border);
-  background: var(--sm-surface);
+  background: color-mix(in srgb, var(--sm-surface) 50%, transparent);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
   color: var(--sm-fg);
-  flex-shrink: 0;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.16);
+  pointer-events: none;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(6px);
+  transition:
+    opacity 0.22s ease,
+    transform 0.22s ease,
+    visibility 0s linear 0.22s;
+}
+
+:root[data-theme="dark"] .toast {
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.42);
+}
+
+.toast.visible {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+  pointer-events: auto;
+  cursor: pointer;
+  transition:
+    opacity 0.18s ease,
+    transform 0.18s ease,
+    visibility 0s linear 0s;
 }
 
 .toast.error {
   border-color: color-mix(in srgb, var(--sm-error) 50%, var(--sm-border));
-  background: color-mix(in srgb, var(--sm-error) 12%, var(--sm-surface));
+  background: color-mix(in srgb, color-mix(in srgb, var(--sm-error) 18%, var(--sm-surface)) 50%, transparent);
   color: var(--sm-error);
 }
 
@@ -866,6 +901,7 @@ mark.match-hl {
   position: absolute;
   right: 14px;
   bottom: 12px;
+  z-index: 10;
   padding: 4px 10px;
   border-radius: 999px;
   border: 1px solid color-mix(in srgb, var(--sm-primary) 50%, var(--sm-border));

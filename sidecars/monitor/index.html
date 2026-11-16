@@ -98,8 +98,6 @@
       </form>
     </header>
 
-    <div id="toast" class="toast hidden" role="alert"></div>
-
     <!-- Active Monitor Toolbar & Viewport -->
     <section id="monitor-section" class="monitor-section hidden">
       <div class="status-strip">
@@ -183,6 +181,8 @@
         Enter a remote <code>hub4com</code> host/IP &amp; port above (for example <code>192.168.1.50</code> : <code>3030</code> at <code>74880</code> baud) to start a broker, or launch a monitor from any conversation to attach automatically.
       </p>
     </main>
+
+    <div id="toast" class="toast" role="alert" aria-live="polite" aria-hidden="true"></div>
   </div>
 
   <script src="/app.js"></script>
