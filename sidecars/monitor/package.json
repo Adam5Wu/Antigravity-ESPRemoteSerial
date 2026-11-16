@@ -1,6 +1,6 @@
 {
   "name": "serial_monitor_sidecar",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "type": "module",
   "description": "Shared RFC2217 & UART serial monitor client sidecar for Antigravity"
 }
