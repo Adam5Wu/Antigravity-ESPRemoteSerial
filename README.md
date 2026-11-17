@@ -2,6 +2,14 @@
 
 Remote serial flashing (`hub4com` / `RFC2217`), a cooperative multi-client serial monitor broker, and an Auxiliary Side Pane terminal purpose-built for **agentic ESP8266 PlatformIO development in Google Antigravity on Windows**.
 
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="assets/panel-dark.png">
+    <source media="(prefers-color-scheme: light)" srcset="assets/panel-light.png">
+    <img alt="Serial Monitor Auxiliary Side Pane in Google Antigravity" src="assets/panel-dark.png" width="656">
+  </picture>
+</p>
+
 ---
 
 ## Why This Exists
@@ -167,7 +175,9 @@ Antigravity-ESPRemoteSerial/
 ├── plugin.json                        # Antigravity plugin manifest (`serial-monitor`)
 ├── Register-Plugin.ps1                # PowerShell shim installer for external checkouts
 ├── assets/
-│   └── logo.svg                       # Plugin icon
+│   ├── logo.svg                       # Plugin icon
+│   ├── panel-dark.png                 # Side panel screenshot (dark theme)
+│   └── panel-light.png                # Side panel screenshot (light theme)
 ├── tools/
 │   ├── pio_hub4com_rfc2217.py         # PlatformIO SCons post-hook & esptool RFC2217 patch
 │   └── serial_monitor.py              # Cooperative Windows serial broker & CLI (`74880` baud)

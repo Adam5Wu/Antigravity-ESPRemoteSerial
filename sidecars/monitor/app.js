@@ -105,14 +105,27 @@
     return data;
   }
 
+  function hideToast() {
+    if (state.toastTimer) {
+      clearTimeout(state.toastTimer);
+      state.toastTimer = null;
+    }
+    const el = $('toast');
+    el.classList.remove('visible');
+    el.setAttribute('aria-hidden', 'true');
+  }
+
   function showToast(msg, isError = false, ttlMs = 3200) {
     const el = $('toast');
     el.textContent = msg;
     el.classList.toggle('error', Boolean(isError));
-    el.classList.remove('hidden');
+    el.setAttribute('aria-hidden', 'false');
+    el.classList.add('visible');
     if (state.toastTimer) clearTimeout(state.toastTimer);
     state.toastTimer = setTimeout(() => {
-      el.classList.add('hidden');
+      state.toastTimer = null;
+      el.classList.remove('visible');
+      el.setAttribute('aria-hidden', 'true');
     }, ttlMs);
   }
 
@@ -1109,6 +1122,8 @@
   }
 
   // ---------- Event Wiring ----------
+  $('toast').addEventListener('click', () => hideToast());
+
   $('refresh-btn').addEventListener('click', () => {
     refreshTargets();
   });

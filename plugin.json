@@ -1,7 +1,7 @@
 {
   "name": "serial-monitor",
   "displayName": "Serial Monitor",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Antigravity side panel, cooperative serial broker, and hub4com RFC2217 flasher for agentic ESP8266 PlatformIO development on Windows.",
   "author": {
     "name": "Zhenyu Wu",
