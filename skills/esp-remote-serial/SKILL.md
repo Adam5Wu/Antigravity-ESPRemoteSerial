@@ -79,15 +79,15 @@ $port = "rfc2217://<host>:<port>?ign_set_control"
 
 When `serial_monitor.py` is active, `pio_hub4com_rfc2217.py` acquires an exclusive `UploadPortLease`, converts `--after hard_reset` to `no_reset` during upload, and queues a clean `RTS` pulse at `74880` baud on lease release — capturing **100% of ROM boot logs from byte 0**.
 
-- **Upload Baud Ceiling**: Verified up to **`2000000` baud** over `com2tcp-rfc2217` (`0.00%` divisor error on ESP8266's `80 MHz` UART clock; `> 2000000` is rejected by Windows UART drivers). Use `921600` if a legacy USB-UART bridge does not support `2000000`.
+- **Upload Baud**: PlatformIO reads it only from `upload_speed` in `platformio.ini` (else the board default, e.g. `921600` for `esp01_4m`) — there is no `PLATFORMIO_UPLOAD_SPEED` env override or `pio run` CLI flag. Set `upload_speed = 2000000` for the verified `com2tcp-rfc2217` ceiling (`0.00%` divisor error on ESP8266's `80 MHz` UART clock; `> 2000000` is rejected by Windows UART drivers), or `921600` if a legacy USB-UART bridge does not support `2000000`.
+- **Pass `--disable-auto-clean` on upload targets**: PlatformIO hashes the resolved project config (including `PLATFORMIO_EXTRA_SCRIPTS` and `PLATFORMIO_UPLOAD_PORT`) into `.pio\build\<env>\project.checksum` and wipes the build directory on mismatch, so adding the post-script only for uploads otherwise forces a full rebuild + relink. Pass the port via `--upload-port` (not hashed).
 
 ```powershell
 $env:PLATFORMIO_EXTRA_SCRIPTS = "post:$HOME\.gemini\config\plugins\serial-monitor\tools\pio_hub4com_rfc2217.py"
-$env:PLATFORMIO_UPLOAD_SPEED  = "2000000"
 
-pio run -t upload   --upload-port "rfc2217://<host>:<port>?ign_set_control"  # Bootloader + partitions + app
-pio run -t uploadfs --upload-port "rfc2217://<host>:<port>?ign_set_control"  # LittleFS / SPIFFS image
-pio run -t erase    --upload-port "rfc2217://<host>:<port>?ign_set_control"  # Full flash erase
+pio run --disable-auto-clean -t upload   --upload-port "rfc2217://<host>:<port>?ign_set_control"  # Bootloader + partitions + app
+pio run --disable-auto-clean -t uploadfs --upload-port "rfc2217://<host>:<port>?ign_set_control"  # LittleFS / SPIFFS image
+pio run --disable-auto-clean -t erase    --upload-port "rfc2217://<host>:<port>?ign_set_control"  # Full flash erase
 
 # Direct esptool commands (flash_id, read_mac, etc.)
 & $py "$HOME\.gemini\config\plugins\serial-monitor\tools\pio_hub4com_rfc2217.py" `

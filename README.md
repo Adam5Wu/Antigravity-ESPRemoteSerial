@@ -114,14 +114,15 @@ powershell -ExecutionPolicy Bypass -File .\Register-Plugin.ps1
 ```powershell
 $tools = "$HOME\.gemini\config\plugins\serial-monitor\tools"
 $env:PLATFORMIO_EXTRA_SCRIPTS = "post:$tools\pio_hub4com_rfc2217.py"
-$env:PLATFORMIO_UPLOAD_SPEED  = "2000000"  # Or "921600" if the remote USB-UART adapter caps lower
 
-pio run -t upload   --upload-port "rfc2217://192.168.1.50:3030?ign_set_control"  # Bootloader + partitions + app
-pio run -t uploadfs --upload-port "rfc2217://192.168.1.50:3030?ign_set_control"  # LittleFS / SPIFFS image
-pio run -t erase    --upload-port "rfc2217://192.168.1.50:3030?ign_set_control"  # Full flash erase
+pio run --disable-auto-clean -t upload   --upload-port "rfc2217://192.168.1.50:3030?ign_set_control"  # Bootloader + partitions + app
+pio run --disable-auto-clean -t uploadfs --upload-port "rfc2217://192.168.1.50:3030?ign_set_control"  # LittleFS / SPIFFS image
+pio run --disable-auto-clean -t erase    --upload-port "rfc2217://192.168.1.50:3030?ign_set_control"  # Full flash erase
 ```
 
-*(You can also declare `extra_scripts = post:...` directly inside `platformio.ini`.)*
+- **Upload baud**: set `upload_speed = 2000000` in `platformio.ini` (or `921600` if the remote USB-UART adapter caps lower). PlatformIO has no `PLATFORMIO_UPLOAD_SPEED` env override or `pio run` CLI flag; without it the board default applies (e.g. `921600` for `esp01_4m`).
+- **`--disable-auto-clean`**: PlatformIO hashes the resolved config (including `PLATFORMIO_EXTRA_SCRIPTS`) into `.pio/build/<env>/project.checksum` and wipes the build directory on mismatch, so adding the post-script only for uploads would otherwise force a full rebuild.
+- *(You can also declare `extra_scripts = post:...` directly inside `platformio.ini`.)*
 
 For standalone `esptool` commands (`flash_id`, `read_mac`, etc.):
 
