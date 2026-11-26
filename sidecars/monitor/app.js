@@ -10,7 +10,7 @@
 (() => {
   const TARGETS_POLL_MS = 2500;
   const MAX_CLIENT_LINES = 5000;
-  const PRESET_BAUDS = new Set(['74880', '115200', '230400', '460800', '921600', '2000000', '57600', '9600']);
+  const PRESET_BAUDS = new Set(['9600', '57600', '74880', '115200', '230400', '460800', '921600']);
 
   const $ = (id) => document.getElementById(id);
 
@@ -635,18 +635,21 @@
         dot.className = `chip-dot ${t.active ? bState : 'idle'}`;
         chip.appendChild(dot);
 
+        const nick = (t.nickname || '').trim();
         const titleSpan = document.createElement('span');
         titleSpan.className = 'chip-title';
-        titleSpan.textContent = t.nickname || t.displayEndpoint;
+        titleSpan.textContent = nick || t.displayEndpoint;
         chip.appendChild(titleSpan);
 
-        const subSpan = document.createElement('span');
-        subSpan.className = 'chip-sub';
         const baud = t.activeBaud || t.configuredBaud;
-        subSpan.textContent = t.nickname ? `${t.displayEndpoint}` : `${baud}`;
-        chip.appendChild(subSpan);
+        if (!nick) {
+          const subSpan = document.createElement('span');
+          subSpan.className = 'chip-sub';
+          subSpan.textContent = `${baud}`;
+          chip.appendChild(subSpan);
+        }
 
-        chip.title = `${t.nickname ? `${t.nickname} — ` : ''}${t.displayEndpoint} @ ${baud} baud (${
+        chip.title = `${nick ? `${nick} — ` : ''}${t.displayEndpoint} @ ${baud} baud (${
           t.active ? `active: ${bState}` : 'saved / idle'
         })`;
 
